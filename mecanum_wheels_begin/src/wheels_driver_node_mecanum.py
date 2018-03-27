@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import rospy
-from duckietown_msgs.msg import WheelsCmdStampedMecanum, BoolStamped
+from mecanum_wheels_msg.msg import WheelsCmdStampedMecanum
+from duckietown_msgs.msg import BoolStamped
 from dagu_car.dagu_wheels_driver_mecanum import DaguWheelsDriver
 
 class WheelsDriverNode(object):
@@ -28,15 +29,20 @@ class WheelsDriverNode(object):
 
     def cbWheelsCmd(self,msg):
         if self.estop:
-            self.driver.setWheelsSpeed(left=0.0,right=0.0,theta=0.0)
+            self.driver.setWheelsSpeed(left_front=0.0,right_front=0.0,left_rear=0.0,right_rear=0.0,theta=0.0)
             return
-        self.driver.setWheelsSpeed(left=msg.vel_left,right=msg.vel_right,theta=msg.theta)
+        self.driver.setWheelsSpeed(left_front=msg.vel_left_front,right_front=msg.vel_right_front,left_rear=msg.vel_left_rear,right_rear=msg.vel_right_rear,theta=msg.theta)
         # Put the wheel commands in a message and publish
         self.msg_wheels_cmd.header = msg.header
         # Record the time the command was given to the wheels_driver
         self.msg_wheels_cmd.header.stamp = rospy.get_rostime()  
-        self.msg_wheels_cmd.vel_left = msg.vel_left
-        self.msg_wheels_cmd.vel_right = msg.vel_right
+        self.msg_wheels_cmd.vel_left_front = msg.vel_left_front
+        self.msg_wheels_cmd.vel_right_front = msg.vel_right_front
+        #
+        self.msg_wheels_cmd.vel_left_rear = msg.vel_left_rear
+        self.msg_wheels_cmd.vel_right_rear = msg.vel_right_rear
+        #
+
         self.msg_wheels_cmd.theta = msg.theta
         self.pub_wheels_cmd.publish(self.msg_wheels_cmd)
 
@@ -48,7 +54,7 @@ class WheelsDriverNode(object):
             rospy.loginfo("[%s] Emergency Stop Released")
 
     def on_shutdown(self):
-        self.driver.setWheelsSpeed(left=0.0,right=0.0,theta=0.0)
+        self.driver.setWheelsSpeed(left_front=0.0,right_front=0.0,left_rear=0.0,right_rear=0.0,theta=0.0)
         rospy.loginfo("[%s] Shutting down."%(rospy.get_name()))
 
 if __name__ == '__main__':

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import rospy
-from duckietown_msgs.msg import WheelsCmdStampedMecanum, Twist2DStampedMecanum
+from mecanum_wheels_msg.msg import WheelsCmdStampedMecanum, Twist2DStampedMecanum
 from duckietown_msgs.srv import SetValueRequest, SetValueResponse, SetValue
 from std_srvs.srv import EmptyRequest, EmptyResponse, Empty
 from numpy import *
@@ -25,7 +25,7 @@ class InverseKinematicsNode(object):
         self.gain = self.setup_parameter("~gain", 1.0)
         self.trim = self.setup_parameter("~trim", 0.0)
 	#
-	self.trim_forward = self.setup_parameter("~trim_forward", 1.1)
+	self.trim_front = self.setup_parameter("~trim_front", 0.5)
         #
 	self.baseline = self.setup_parameter("~baseline", 0.1)
         self.radius = self.setup_parameter("~radius", 0.0318)
@@ -43,7 +43,7 @@ class InverseKinematicsNode(object):
         self.srv_set_limit = rospy.Service("~set_limit", SetValue, self.cbSrvSetLimit)
         self.srv_save = rospy.Service("~save_calibration", Empty, self.cbSrvSaveCalibration)
 	#
-	self.srv_set_trim_forward = rospy.Service("~set_trim_forward", SetValue, self.cbSrvSetTrimForward)
+	self.srv_set_trim_front = rospy.Service("~set_trim_front", SetValue, self.cbSrvSetTrimFront)
 	#
 
         # Setup the publisher and subscriber
@@ -72,7 +72,7 @@ class InverseKinematicsNode(object):
         if yaml_dict is None:
             # Empty yaml file
             return
-        for param_name in ["gain", "trim", "baseline", "k", "radius", "limit"]:
+        for param_name in ["gain", "trim", "trim_front", "baseline", "k", "radius", "limit"]:
             param_value = yaml_dict.get(param_name)
             if param_name is not None:
                 rospy.set_param("~"+param_name, param_value)
@@ -90,7 +90,7 @@ class InverseKinematicsNode(object):
             "calibration_time": time.strftime("%Y-%m-%d-%H-%M-%S"),
             "gain": self.gain,
             "trim": self.trim,
-            #"trim_forward": self.trim_forward,
+            "trim_front": self.trim_front,
             "baseline": self.baseline,
             "radius": self.radius,
             "k": self.k,
@@ -140,8 +140,8 @@ class InverseKinematicsNode(object):
         return SetValueResponse()
 
 #
-    def cbSrvSetTrimForward(self, req):
-        self.trim_forward = req.value
+    def cbSrvSetTrimFront(self, req):
+        self.trim_front = req.value
         self.printValues()
         return SetValueResponse()
 #
@@ -158,7 +158,7 @@ class InverseKinematicsNode(object):
         return limit
 
     def printValues(self):
-        rospy.loginfo("[%s] gain: %s trim: %s baseline: %s radius: %s k: %s limit: %s" % (self.node_name, self.gain, self.trim, self.baseline, self.radius, self.k, self.limit))
+        rospy.loginfo("[%s] gain: %s trim: %s trim_front: %s baseline: %s radius: %s k: %s limit: %s" % (self.node_name, self.gain, self.trim, self.trim_front, self.baseline, self.radius, self.k, self.limit))
 
     def car_cmd_callback(self, msg_car_cmd):
         # assuming same motor constants k for both motors
@@ -166,27 +166,43 @@ class InverseKinematicsNode(object):
         k_l = self.k
 
         # adjusting k by gain and trim
-        k_r_inv = (self.gain + self.trim) / k_r
-        k_l_inv = (self.gain - self.trim) / k_l
-        
+        k_r_f_inv = (self.gain + self.trim + self.trim_front) / k_r
+        k_l_f_inv = (self.gain - self.trim + self.trim_front) / k_l
+        #
+        k_r_r_inv = (self.gain + self.trim - self.trim_front) / k_r
+        k_l_r_inv = (self.gain - self.trim - self.trim_front) / k_l
+        #
+
         omega_r = (msg_car_cmd.v + 0.5 * msg_car_cmd.omega * self.baseline) / self.radius
         omega_l = (msg_car_cmd.v - 0.5 * msg_car_cmd.omega * self.baseline) / self.radius
         
         # conversion from motor rotation rate to duty cycle
         # u_r = (gain + trim) (v + 0.5 * omega * b) / (r * k_r)
-        u_r = omega_r * k_r_inv
+        u_r_f = omega_r * k_r_f_inv
         # u_l = (gain - trim) (v - 0.5 * omega * b) / (r * k_l)
-        u_l = omega_l * k_l_inv
+        u_l_f = omega_l * k_l_f_inv
+        #
+        u_r_r = omega_r * k_r_r_inv
+        u_l_r = omega_l * k_l_r_inv
+        #
 
         # limiting output to limit, which is 1.0 for the duckiebot
-        u_r_limited = max(min(u_r, self.limit), -self.limit)
-        u_l_limited = max(min(u_l, self.limit), -self.limit)
+        u_r_f_limited = max(min(u_r_f, self.limit), -self.limit)
+        u_l_f_limited = max(min(u_l_f, self.limit), -self.limit)
+        #
+        u_r_r_limited = max(min(u_r_r, self.limit), -self.limit)
+        u_l_r_limited = max(min(u_l_r, self.limit), -self.limit)
+
 
         # Put the wheel commands in a message and publish
         msg_wheels_cmd = WheelsCmdStampedMecanum()
         msg_wheels_cmd.header.stamp = msg_car_cmd.header.stamp
-        msg_wheels_cmd.vel_right = u_r_limited
-        msg_wheels_cmd.vel_left = u_l_limited
+        msg_wheels_cmd.vel_right_front = u_r_f_limited
+        msg_wheels_cmd.vel_left_front = u_l_f_limited
+        #
+        msg_wheels_cmd.vel_right_rear = u_r_r_limited
+        msg_wheels_cmd.vel_left_rear = u_l_r_limited
+        #
         msg_wheels_cmd.theta = msg_car_cmd.theta
         self.pub_wheels_cmd.publish(msg_wheels_cmd)
 

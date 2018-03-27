@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import rospy
-from duckietown_msgs.msg import WheelsCmdStampedMecanum, Twist2DStamped
+from mecanum_wheels_msg.msg import WheelsCmdStampedMecanum
+from duckietown_msgs.msg import Twist2DStamped
 from duckietown_msgs.srv import SetValueRequest, SetValueResponse, SetValue
 from std_srvs.srv import EmptyRequest, EmptyResponse, Empty
 from numpy import *
@@ -28,7 +29,7 @@ class ForwardKinematicsNode(object):
         self.gain = self.setup_parameter("~gain", 1.0)
         self.trim = self.setup_parameter("~trim", 0.0)
         #
-#        self.trim_forward = self.setup_parameter("~trim_forward", 1.1)
+        self.trim_front = self.setup_parameter("~trim_front", 0.5)
         #
         self.baseline = self.setup_parameter("~baseline", 0.1)
         self.radius = self.setup_parameter("~radius", 0.0318)
@@ -60,7 +61,7 @@ class ForwardKinematicsNode(object):
         if yaml_dict is None:
             # Empty yaml file
             return
-        for param_name in ["gain", "trim", "baseline", "k", "radius"]:
+        for param_name in ["gain", "trim", "trim_front", "baseline", "k", "radius"]:
             param_value = yaml_dict.get(param_name)
             if param_name is not None:
                 rospy.set_param("~" + param_name, param_value)
@@ -72,7 +73,7 @@ class ForwardKinematicsNode(object):
         return get_duckiefleet_root()+'/calibrations/kinematics/' + name + ".yaml"        
 
     def printValues(self):
-        rospy.loginfo("[%s] gain: %s trim: %s baseline: %s radius: %s k: %s" % (self.node_name, self.gain, self.trim, self.baseline, self.radius, self.k))
+        rospy.loginfo("[%s] gain: %s trim: %s trim_front: %s baseline: %s radius: %s k: %s" % (self.node_name, self.gain, self.trim, self.trim_front, self.baseline, self.radius, self.k))
 
     def wheels_cmd_callback(self, msg_wheels_cmd):
         # compute duty cycle gain
@@ -83,8 +84,8 @@ class ForwardKinematicsNode(object):
         k_l_inv = (self.gain - self.trim) / k_l
 
         # Conversion from motor duty to motor rotation rate
-        omega_r = msg_wheels_cmd.vel_right / k_r_inv
-        omega_l = msg_wheels_cmd.vel_left / k_l_inv
+        omega_r = msg_wheels_cmd.vel_right_front / k_r_inv
+        omega_l = msg_wheels_cmd.vel_left_front / k_l_inv
 
         # Compute linear and angular velocity of the platform
         v = (self.radius * omega_r + self.radius * omega_l) / 2.0

@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 import rospy
 import math
-
-from duckietown_msgs.msg import Twist2DStampedMecanum, BoolStamped
+from mecanum_wheels_msg.msg import Twist2DStampedMecanum
+from duckietown_msgs.msg import BoolStamped
 from sensor_msgs.msg import Joy
 
 from math import sqrt, atan2, pi
