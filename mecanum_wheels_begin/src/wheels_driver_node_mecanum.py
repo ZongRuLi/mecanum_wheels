@@ -2,7 +2,7 @@
 import rospy
 from mecanum_wheels_msg.msg import WheelsCmdStampedMecanum
 from duckietown_msgs.msg import BoolStamped
-from dagu_car.dagu_wheels_driver_mecanum import DaguWheelsDriver
+from dagu_wheels_driver_mecanum import DaguWheelsDriver
 
 class WheelsDriverNode(object):
     def __init__(self):
