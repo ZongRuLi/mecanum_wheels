@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 import rospy
-from mecanum_wheels_msg.msg import WheelsCmdStampedMecanum
-from duckietown_msgs.msg import BoolStamped
-from dagu_wheels_driver_mecanum import DaguWheelsDriver
+from mecanum_wheels_msgs.msg import WheelsCmdStamped, BoolStamped
+from dagu_wheels_driver import DaguWheelsDriver
 
 class WheelsDriverNode(object):
     def __init__(self):
@@ -13,12 +12,12 @@ class WheelsDriverNode(object):
         # Setup publishers
         self.driver = DaguWheelsDriver()
         #add publisher for wheels command wih execution time
-        self.msg_wheels_cmd = WheelsCmdStampedMecanum()
-        self.pub_wheels_cmd = rospy.Publisher("~wheels_cmd_executed",WheelsCmdStampedMecanum, queue_size=1)
+        self.msg_wheels_cmd = WheelsCmdStamped()
+        self.pub_wheels_cmd = rospy.Publisher("~wheels_cmd_executed",WheelsCmdStamped, queue_size=1)
 
         # Setup subscribers
         self.control_constant = 1.0
-        self.sub_topic = rospy.Subscriber("~wheels_cmd", WheelsCmdStampedMecanum, self.cbWheelsCmd, queue_size=1)
+        self.sub_topic = rospy.Subscriber("~wheels_cmd", WheelsCmdStamped, self.cbWheelsCmd, queue_size=1)
         self.sub_e_stop = rospy.Subscriber("~emergency_stop", BoolStamped, self.cbEStop, queue_size=1)
 
     def setupParam(self,param_name,default_value):

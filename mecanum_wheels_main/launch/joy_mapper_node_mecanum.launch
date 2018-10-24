@@ -1,5 +1,5 @@
 <launch>
-	<arg name="pkg_name" value="mecanum_wheels_begin"/>
+	<arg name="pkg_name" value="mecanum_wheels_main"/>
 	<arg name="node_name" default="joy_mapper_node_mecanum"/>
 		
 	<arg name="veh" doc="Name of vehicle. ex: megaman"/>

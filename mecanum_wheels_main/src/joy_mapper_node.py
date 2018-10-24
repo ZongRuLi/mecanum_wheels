@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 import rospy
 import math
-from mecanum_wheels_msg.msg import Twist2DStampedMecanum
-from duckietown_msgs.msg import BoolStamped
+from mecanum_wheels_msgs.msg import Twist2DStampedMecanum, BoolStamped
 from sensor_msgs.msg import Joy
 
 from math import sqrt, atan2, pi
@@ -26,7 +25,7 @@ class JoyMapper(object):
         self.simulated_vehicle_length = self.setupParam("~simulated_vehicle_length", 0.18)
 
         # Publications
-        self.pub_car_cmd = rospy.Publisher("~car_cmd", Twist2DStampedMecanum, queue_size=1)
+        self.pub_car_cmd = rospy.Publisher("~car_cmd", Twist2DStamped, queue_size=1)
         self.pub_joy_override = rospy.Publisher("~joystick_override", BoolStamped, queue_size=1)
         self.pub_parallel_autonomy = rospy.Publisher("~parallel_autonomy",BoolStamped, queue_size=1)
         self.pub_anti_instagram = rospy.Publisher("anti_instagram_node/click",BoolStamped, queue_size=1)
@@ -65,7 +64,7 @@ class JoyMapper(object):
         self.processButtons(joy_msg)
 
     def publishControl(self):
-        car_cmd_msg = Twist2DStampedMecanum()
+        car_cmd_msg = Twist2DStamped()
         car_cmd_msg.header.stamp = self.joy.header.stamp
         car_cmd_msg.v = sqrt(self.joy.axes[0]*self.joy.axes[0] + self.joy.axes[1]*self.joy.axes[1] * self.v_gain) #Left stick V-axis. Up is positive
         car_cmd_msg.theta = atan2(self.joy.axes[1],self.joy.axes[0]) if (self.joy.axes[0]!=0 or self.joy.axes[1]!=0) else pi/2

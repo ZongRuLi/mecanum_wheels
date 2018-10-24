@@ -1,20 +1,12 @@
 #!/usr/bin/env python
 import rospy
-from mecanum_wheels_msg.msg import WheelsCmdStampedMecanum
-from duckietown_msgs.msg import Twist2DStamped
-from duckietown_msgs.srv import SetValueRequest, SetValueResponse, SetValue
+from mecanum_wheels_msgs.msg import WheelsCmdStamped, Twist2DStamped
+from mecanum_wheels_msgs.srv import SetValueRequest, SetValueResponse, SetValue
 from std_srvs.srv import EmptyRequest, EmptyResponse, Empty
 from numpy import *
 import yaml
 import time
 import os.path
-from duckietown_utils import get_duckiefleet_root
-
-
-# Forward Kinematics Node
-# Authors: Robert Katzschmann
-# Inputs: wheels cmd
-# Outputs: velocity
 
 class ForwardKinematicsNode(object):
     def __init__(self):
@@ -28,16 +20,14 @@ class ForwardKinematicsNode(object):
         # Set local variable by reading parameters
         self.gain = self.setup_parameter("~gain", 1.0)
         self.trim = self.setup_parameter("~trim", 0.0)
-        #
         self.trim_front = self.setup_parameter("~trim_front", 0.5)
-        #
         self.baseline = self.setup_parameter("~baseline", 0.1)
         self.radius = self.setup_parameter("~radius", 0.0318)
         self.k = self.setup_parameter("~k", 27.0)
 
         # Setup the publisher and subscribers
         self.pub_velocity = rospy.Publisher("~velocity", Twist2DStamped, queue_size=1)
-        self.sub_wheels_cmd = rospy.Subscriber("~wheels_cmd", WheelsCmdStampedMecanum, self.wheels_cmd_callback)
+        self.sub_wheels_cmd = rospy.Subscriber("~wheels_cmd", WheelsCmdStamped, self.wheels_cmd_callback)
         rospy.loginfo("[%s] Initialized.", self.node_name)
         self.printValues()
 
@@ -70,7 +60,7 @@ class ForwardKinematicsNode(object):
                 pass
 
     def getFilePath(self, name):
-        return get_duckiefleet_root()+'/calibrations/kinematics/' + name + ".yaml"        
+        return os,environ['HOME']+'/catkin_ws/src/calibrations/kinematics/' + name + ".yaml"        
 
     def printValues(self):
         rospy.loginfo("[%s] gain: %s trim: %s trim_front: %s baseline: %s radius: %s k: %s" % (self.node_name, self.gain, self.trim, self.trim_front, self.baseline, self.radius, self.k))
@@ -96,6 +86,7 @@ class ForwardKinematicsNode(object):
         msg_velocity.header = msg_wheels_cmd.header
         msg_velocity.v = v
         msg_velocity.omega = omega
+        msg_velocity.theta = 0
         self.pub_velocity.publish(msg_velocity)
 
     def setup_parameter(self, param_name, default_value):

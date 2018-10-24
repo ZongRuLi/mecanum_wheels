@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 import rospy
-from mecanum_wheels_msg.msg import WheelsCmdStampedMecanum, Twist2DStampedMecanum
-from duckietown_msgs.srv import SetValueRequest, SetValueResponse, SetValue
+from mecanum_wheels_msgs.msg import WheelsCmdStampedMecanum, Twist2DStampedMecanum
+from mecanum_wheels_msgs.srv import SetValueRequest, SetValueResponse, SetValue
 from std_srvs.srv import EmptyRequest, EmptyResponse, Empty
 from numpy import *
 import yaml
 import time
+import os
 import os.path
 from duckietown_utils import get_duckiefleet_root
 
@@ -47,8 +48,8 @@ class InverseKinematicsNode(object):
 	#
 
         # Setup the publisher and subscriber
-        self.sub_car_cmd = rospy.Subscriber("~car_cmd", Twist2DStampedMecanum, self.car_cmd_callback)
-        self.pub_wheels_cmd = rospy.Publisher("~wheels_cmd", WheelsCmdStampedMecanum, queue_size=1)
+        self.sub_car_cmd = rospy.Subscriber("~car_cmd", Twist2DStamped, self.car_cmd_callback)
+        self.pub_wheels_cmd = rospy.Publisher("~wheels_cmd", WheelsCmdStamped, queue_size=1)
         rospy.loginfo("[%s] Initialized.", self.node_name)
         self.printValues()
 
@@ -81,7 +82,7 @@ class InverseKinematicsNode(object):
                 pass
 
     def getFilePath(self, name):
-        return (get_duckiefleet_root()+'/calibrations/kinematics/' + name + ".yaml")
+        return os,environ['HOME']+'/catkin_ws/src/calibrations/kinematics/' + name + ".yaml")
 
             
     def saveCalibration(self):
@@ -215,5 +216,5 @@ class InverseKinematicsNode(object):
 
 if __name__ == '__main__':
     rospy.init_node('inverse_kinematics_node', anonymous=False)
-    inverse_kinematics_node_mecanum = InverseKinematicsNode()
+    inverse_kinematics_node = InverseKinematicsNode()
     rospy.spin()
