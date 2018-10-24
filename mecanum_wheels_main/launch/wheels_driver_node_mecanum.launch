@@ -3,6 +3,5 @@
     <node ns="$(arg veh)" machine="$(arg veh)" pkg="mecanum_wheels_main" type="wheels_driver_node_mecanum.py" name="wheels_driver_node_mecanum" output="screen" clear_params="true" required="true"/>
     
     <!-- Subscriptions -->
-    <!-- "~wheels_cmd": duckietown_msgs/WheelsCmd. Command for the wheels -->
 
 </launch>
