@@ -1,0 +1,7 @@
+owner: sis
+hostname: sismecanum
+username: sis
+description: Mecanum platform for SIS
+log:
+    201-10-4: >
+        Initialization
