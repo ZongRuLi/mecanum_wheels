@@ -1,6 +1,6 @@
 <launch>
 	<arg name="pkg_name" value="mecanum_wheels_main"/>
-	<arg name="node_name" default="joy_mapper_node_mecanum"/>
+	<arg name="node_name" default="joy_mapper_node"/>
 		
 	<arg name="veh" doc="Name of vehicle. ex: megaman"/>
 	<arg name="local" default="false" doc="true for running on laptop. false for running on vehicle."/>
