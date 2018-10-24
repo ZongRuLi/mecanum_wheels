@@ -1,5 +1,5 @@
 owner: sis
-hostname: sismecanum
+hostname: mecanum
 username: sis
 description: Mecanum platform for SIS
 log:

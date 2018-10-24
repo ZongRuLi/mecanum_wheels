@@ -13,7 +13,8 @@
 	</node>
 
 	<!-- Run on remote (vehicle) -->
-	<node unless="$(arg local)" ns="$(arg veh)" pkg="$(arg pkg_name)" type="$(arg node_name).py" name="$(arg node_name)" output="screen" clear_params="true" required="true">
+	<include unless="$(arg local)" file="$(find mecanum_wheels_main)/machines"/>
+	<node unless="$(arg local)" ns="$(arg veh)" machine="$(arg veh)" pkg="$(arg pkg_name)" type="$(arg node_name).py" name="$(arg node_name)" output="screen" clear_params="true" required="true">
 		<rosparam command="load" file="$(find mecanum_wheels_main)/config/$(arg config)/$(arg pkg_name)/$(arg node_name)/$(arg param_file_name).yaml"/>
 	</node>	
 
