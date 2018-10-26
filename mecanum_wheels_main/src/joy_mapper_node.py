@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import rospy
 import math
-from mecanum_wheels_msgs.msg import Twist2DStampedMecanum, BoolStamped
+from mecanum_wheels_msgs.msg import Twist2DStamped, BoolStamped
 from sensor_msgs.msg import Joy
 
 from math import sqrt, atan2, pi

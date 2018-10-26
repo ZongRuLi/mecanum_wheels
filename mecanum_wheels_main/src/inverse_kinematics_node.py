@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import rospy
-from mecanum_wheels_msgs.msg import WheelsCmdStampedMecanum, Twist2DStampedMecanum
+from mecanum_wheels_msgs.msg import WheelsCmdStamped, Twist2DStamped
 from mecanum_wheels_msgs.srv import SetValueRequest, SetValueResponse, SetValue
 from std_srvs.srv import EmptyRequest, EmptyResponse, Empty
 from numpy import *
@@ -8,7 +8,6 @@ import yaml
 import time
 import os
 import os.path
-from duckietown_utils import get_duckiefleet_root
 
 # Inverse Kinematics Node
 # Author: Robert Katzschmann, Shih-Yuan Liu
@@ -82,7 +81,7 @@ class InverseKinematicsNode(object):
                 pass
 
     def getFilePath(self, name):
-        return os,environ['HOME']+'/catkin_ws/src/mecanum_wheels/calibrations/kinematics/' + name + ".yaml")
+        return (os.environ['HOME']+'/catkin_ws/src/mecanum_wheels/calibrations/kinematics/' + name + ".yaml")
 
             
     def saveCalibration(self):
