@@ -60,7 +60,7 @@ class ForwardKinematicsNode(object):
                 pass
 
     def getFilePath(self, name):
-        return os,environ['HOME']+'/catkin_ws/src/calibrations/kinematics/' + name + ".yaml"        
+        return os.environ['HOME']+'/catkin_ws/src/mecanum_wheels/calibrations/kinematics/' + name + ".yaml"        
 
     def printValues(self):
         rospy.loginfo("[%s] gain: %s trim: %s trim_front: %s baseline: %s radius: %s k: %s" % (self.node_name, self.gain, self.trim, self.trim_front, self.baseline, self.radius, self.k))

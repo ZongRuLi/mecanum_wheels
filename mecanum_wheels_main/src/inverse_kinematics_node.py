@@ -195,7 +195,7 @@ class InverseKinematicsNode(object):
 
 
         # Put the wheel commands in a message and publish
-        msg_wheels_cmd = WheelsCmdStampedMecanum()
+        msg_wheels_cmd = WheelsCmdStamped()
         msg_wheels_cmd.header.stamp = msg_car_cmd.header.stamp
         msg_wheels_cmd.vel_right_front = u_r_f_limited
         msg_wheels_cmd.vel_left_front = u_l_f_limited
