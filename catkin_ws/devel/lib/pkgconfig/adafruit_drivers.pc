@@ -1,0 +1,8 @@
+prefix=/home/sis/catkin_ws/src/mecanum_wheels/catkin_ws/devel
+
+Name: adafruit_drivers
+Description: Description of adafruit_drivers
+Version: 1.0.0
+Cflags: 
+Libs: -L/home/sis/catkin_ws/src/mecanum_wheels/catkin_ws/devel/lib 
+Requires: 
