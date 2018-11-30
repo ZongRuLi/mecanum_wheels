@@ -61,8 +61,8 @@ class DaguWheelsDriver:
 
     def updatePWM(self):
         vlf = self.leftFrontSpeed*self.left_sgn*sin(-1*self.theta+3*pi/4)
-        vrf = self.rightFrontSpeed*self.right_sgn*cos(-1*self.theta+3*pi/4)
-        vlr = self.leftRearSpeed*self.left_sgn*cos(-1*self.theta+3*pi/4)
+        vrf = self.rightFrontSpeed*self.right_sgn*sin(-1*self.theta+3*pi/4)
+        vlr = self.leftRearSpeed*self.left_sgn*sin(-1*self.theta+3*pi/4)
         vrr = self.rightRearSpeed*self.right_sgn*sin(-1*self.theta+3*pi/4)
         #rospy.loginfo("vlf:%s vrf:%s vlr:%s vrr:%s" %(vlf,vrf,vlr,vrr))
 
