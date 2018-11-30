@@ -75,7 +75,7 @@ class InverseKinematicsNode(object):
                 pass
 
     def getFilePath(self, name):
-        return (os.environ['HOME']+'/catkin_ws/src/mecanum_wheels/calibrations/kinematics/' + name + ".yaml")
+        return (os.environ['HOME']+'/mecanum_wheels/calibrations/kinematics/' + name + ".yaml")
 
             
     def saveCalibration(self):
