@@ -60,8 +60,8 @@ class JoyMapper(object):
 
     def cbJoy(self, joy_msg):
         self.joy = joy_msg
-        self.publishControl()
-        self.processButtons(joy_msg)
+        #self.publishControl()
+        #self.processButtons(joy_msg)
 
     def publishControl(self):
         car_cmd_msg = Twist2DStamped()
