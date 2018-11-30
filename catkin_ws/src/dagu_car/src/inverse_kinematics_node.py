@@ -9,6 +9,7 @@ import time
 import os
 import os.path
 import socket
+from sensor_msgs.msg import Joy
 
 class InverseKinematicsNode(object):
     def __init__(self):
@@ -43,7 +44,7 @@ class InverseKinematicsNode(object):
         # Setup the publisher and subscriber
         self.sub_car_cmd = rospy.Subscriber("~car_cmd", Twist2DStamped, self.car_cmd_callback)
         self.pub_wheels_cmd = rospy.Publisher("~wheels_cmd", WheelsCmdStamped, queue_size=1)
-        self.sub_joy_ = rospy.Subscriber("/test/joy", Joy, self.cbJoy, queue_size=1)
+        self.sub_joy_ = rospy.Subscriber("/mecanum/joy", Joy, self.cbJoy, queue_size=1)
         rospy.loginfo("[%s] Initialized.", self.node_name)
         self.printValues()
 
@@ -154,13 +155,13 @@ class InverseKinematicsNode(object):
         rospy.loginfo("[%s] gain: %s trim: %s trim_front: %s baseline: %s radius: %s k: %s limit: %s" % (self.node_name, self.gain, self.trim, self.trim_front, self.baseline, self.radius, self.k, self.limit))
 
     def cbJoy(self, joy_msg):
-        u_r_f_limibuted = joy_msg.buttons[3] + joy_msg.buttons[0]
-        u_l_f_limibuted = joy_msg.buttons[2] + joy_msg.buttons[1]
-        u_r_r_limibuted = joy_msg.buttons[4] + joy_msg.buttons[5]
-        u_l_r_limibuted = joy_msg.buttons[6] + joy_msg.buttons[7]
+        u_r_f_limited = joy_msg.buttons[3] - joy_msg.buttons[0]
+        u_l_f_limited = joy_msg.buttons[2] - joy_msg.buttons[1]
+        u_r_r_limited = joy_msg.buttons[4] - joy_msg.buttons[5]
+        u_l_r_limited = joy_msg.buttons[6] - joy_msg.buttons[7]
 
         msg_wheels_cmd = WheelsCmdStamped()
-        msg_wheels_cmd.header.stamp = msg_car_cmd.header.stamp
+        msg_wheels_cmd.header.stamp = joy_msg.header.stamp
 
         msg_wheels_cmd.vel_right_front = u_r_f_limited
         msg_wheels_cmd.vel_left_front = u_l_f_limited
