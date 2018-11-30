@@ -1,8 +1,0 @@
-prefix=/home/sis/catkin_ws/src/mecanum_wheels/catkin_ws/install
-
-Name: dagu_car
-Description: Description of dagu_car
-Version: 0.0.0
-Cflags: 
-Libs: -L/home/sis/catkin_ws/src/mecanum_wheels/catkin_ws/install/lib 
-Requires: 

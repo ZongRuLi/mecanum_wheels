@@ -1,2 +1,0 @@
-adafruit_drivers:dagu_car:joy_mapper:mecanum_wheels_msgs
--DCATKIN_DEVEL_PREFIX=/home/sis/catkin_ws/src/mecanum_wheels/catkin_ws/devel -DCMAKE_INSTALL_PREFIX=/home/sis/catkin_ws/src/mecanum_wheels/catkin_ws/install -G Unix Makefiles
